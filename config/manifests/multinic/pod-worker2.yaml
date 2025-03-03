@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netshoot-worker2
+  annotations:
+    k8s.v1.cni.cncf.io/networks: veth-rail1-worker2,veth-rail2-worker2
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: k8sdev-worker2
+  containers:
+    - name: netshoot
+      image: nicolaka/netshoot:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+        - infinity

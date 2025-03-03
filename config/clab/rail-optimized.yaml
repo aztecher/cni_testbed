@@ -1,0 +1,53 @@
+name: rail-optimized
+
+mgmt:
+  network: fixedips
+  ipv4-subnet: 172.20.0.0/24
+
+topology:
+  nodes:
+    rail_leaf1:
+      kind: linux
+      image: frrouting/frr:v8.4.0
+      mgmt-ipv4: 172.20.0.10
+      binds:
+        - rail_leaf1/daemons:/etc/frr/daemons
+        - rail_leaf1/frr.conf:/etc/frr/frr.conf
+        - rail_leaf1/vtysh.conf:/etc/frr/vtysh.conf
+        - rail_leaf1/bfdd.conf:/etc/frr/bfdd.conf
+    rail_leaf2:
+      kind: linux
+      image: frrouting/frr:v8.4.0
+      mgmt-ipv4: 172.20.0.11
+      binds:
+        - rail_leaf2/daemons:/etc/frr/daemons
+        - rail_leaf2/frr.conf:/etc/frr/frr.conf
+        - rail_leaf2/vtysh.conf:/etc/frr/vtysh.conf
+        - rail_leaf2/bfdd.conf:/etc/frr/bfdd.conf
+    spine1:
+      kind: linux
+      image: frrouting/frr:v8.4.0
+      mgmt-ipv4: 172.20.0.20
+      binds:
+        - spine1/daemons:/etc/frr/daemons
+        - spine1/frr.conf:/etc/frr/frr.conf
+        - spine1/vtysh.conf:/etc/frr/vtysh.conf
+        - spine1/bfdd.conf:/etc/frr/bfdd.conf
+    spine2:
+      kind: linux
+      image: frrouting/frr:v8.4.0
+      mgmt-ipv4: 172.20.0.21
+      binds:
+        - spine2/daemons:/etc/frr/daemons
+        - spine2/frr.conf:/etc/frr/frr.conf
+        - spine2/vtysh.conf:/etc/frr/vtysh.conf
+        - spine2/bfdd.conf:/etc/frr/bfdd.conf
+  links:
+    # Link between leaf1 - spine1
+    - endpoints: ["rail_leaf1:to-spine1", "spine1:to-rail_leaf1"]
+    # Link between leaf1 - spine2
+    - endpoints: ["rail_leaf1:to-spine2", "spine2:to-rail_leaf1"]
+    # Link between leaf2 - spine1
+    - endpoints: ["rail_leaf2:to-spine1", "spine1:to-rail_leaf2"]
+    # Link between leaf2 - spine2
+    - endpoints: ["rail_leaf2:to-spine2", "spine2:to-rail_leaf2"]

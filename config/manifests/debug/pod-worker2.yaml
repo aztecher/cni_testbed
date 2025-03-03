@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netdebug-worker2
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: k8sdev-worker2
+  hostNetwork: true
+  containers:
+    - name: netshoot
+      image: nicolaka/netshoot:latest
+      imagePullPolicy: IfNotPresent
+      command:
+        - sleep
+        - infinity
