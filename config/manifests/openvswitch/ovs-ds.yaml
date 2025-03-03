@@ -1,0 +1,79 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: ovs
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: ovs
+  template:
+    metadata:
+      labels:
+        app: ovs
+    spec:
+      hostNetwork: true
+      containers:
+        - name: ovsdb-vswitchd
+          image: localhost:3.5_debian_6.8.0-51-generic
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          command:
+            - start-ovs
+            - ovs-vswitchd
+          volumeMounts:
+            - name: host-lib
+              mountPath: /lib
+              mountPropagation: Bidirectional
+            - name: ovs-log
+              mountPath: /var/log/openvswitch
+              mountPropagation: Bidirectional
+            - name: ovs-lib
+              mountPath: /var/lib/openvswitch
+              mountPropagation: Bidirectional
+            - name: ovs-run
+              mountPath: /var/run/openvswitch
+              mountPropagation: Bidirectional
+            - name: ovs-etc
+              mountPath: /etc/openvswitch
+              mountPropagation: Bidirectional
+        - name: ovsdb-server
+          image: localhost:3.5_debian_6.8.0-51-generic
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          command:
+            - start-ovs
+            - ovsdb-server
+          volumeMounts:
+            - name: ovs-log
+              mountPath: /var/log/openvswitch
+              mountPropagation: Bidirectional
+            - name: ovs-lib
+              mountPath: /var/lib/openvswitch
+              mountPropagation: Bidirectional
+            - name: ovs-run
+              mountPath: /var/run/openvswitch
+              mountPropagation: Bidirectional
+            - name: ovs-etc
+              mountPath: /etc/openvswitch
+              mountPropagation: Bidirectional
+      volumes:
+        - name: host-lib
+          hostPath:
+            path: /lib
+            type: Directory
+        - name: ovs-log
+          hostPath:
+            path: /var/log/openvswitch
+        - name: ovs-lib
+          hostPath:
+            path: /var/lib/openvswitch
+        - name: ovs-run
+          hostPath:
+            path: /var/run/openvswitch
+        - name: ovs-etc
+          hostPath:
+            path: /etc/openvswitch
